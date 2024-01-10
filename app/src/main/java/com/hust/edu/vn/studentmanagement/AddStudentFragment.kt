@@ -16,6 +16,7 @@ import com.hust.edu.vn.studentmanagement.databinding.FragmentAddStudentBinding
 import com.hust.edu.vn.studentmanagement.databinding.FragmentStudentListBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -64,16 +65,17 @@ class AddStudentFragment : Fragment() {
             // Thực hiện cập nhật trong Database
             lifecycleScope.launch(Dispatchers.IO) {
                 val rowsAffected = studentDao.insert(newStudent)
-                if (rowsAffected > 0) {
-                    // Nếu cập nhật thành công, hiển thị Toast thông báo
-                    Toast.makeText(requireContext(), "Tạo thành công", Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    // Nếu có lỗi, hiển thị Toast thông báo lỗi
-                    Toast.makeText(requireContext(), "Tạo thất bại", Toast.LENGTH_SHORT).show()
+                withContext(Dispatchers.Main) {
+                    if (rowsAffected > 0) {
+                        // Nếu cập nhật thành công, hiển thị Toast thông báo
+                        Toast.makeText(requireContext(), "Tạo thành công", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Nếu có lỗi, hiển thị Toast thông báo lỗi
+                        Toast.makeText(requireContext(), "Tạo thất bại", Toast.LENGTH_SHORT).show()
+                    }
+                    findNavController().navigate(R.id.action_addStudentFragment_to_studentListFragment)
                 }
             }
-            findNavController().navigate(R.id.action_addStudentFragment_to_studentListFragment)
         }
     }
 

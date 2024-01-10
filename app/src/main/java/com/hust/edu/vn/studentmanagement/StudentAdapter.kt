@@ -1,6 +1,7 @@
 package com.hust.edu.vn.studentmanagement
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +9,7 @@ import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
-class StudentAdapter(private val studentListFragment: StudentListFragment,private val students: Array<Student>) :
+class StudentAdapter(private val studentListFragment: StudentListFragment,private val students: MutableList<Student>) :
     RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
     inner class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val code: TextView

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hust.edu.vn.studentmanagement.databinding.FragmentStudentListBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class StudentListFragment : Fragment(), MenuProvider {
     private lateinit var binding: FragmentStudentListBinding
@@ -36,19 +37,21 @@ class StudentListFragment : Fragment(), MenuProvider {
         super.onViewCreated(view, savedInstanceState)
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        var students: Array<Student> = emptyArray()
+        var students: MutableList<Student> = mutableListOf()
         lifecycleScope.launch(Dispatchers.IO) {
             students = studentDao.getAllStudents()
             Log.v("TAG", "ret = $students")
+            withContext(Dispatchers.Main) {
+                val recyclerView: RecyclerView = binding.studentList
+                val studentAdapter = StudentAdapter(this@StudentListFragment, students)
+                recyclerView.adapter = studentAdapter
+                recyclerView.layoutManager = LinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.VERTICAL,
+                    false
+                )
+            }
         }
-        val recyclerView: RecyclerView = binding.studentList
-        val studentAdapter = StudentAdapter(this, students)
-        recyclerView.adapter = studentAdapter
-        recyclerView.layoutManager = LinearLayoutManager(
-            requireContext(),
-            LinearLayoutManager.VERTICAL,
-            false
-        )
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

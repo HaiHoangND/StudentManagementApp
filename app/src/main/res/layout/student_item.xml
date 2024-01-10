@@ -11,7 +11,7 @@
         android:background="@color/gray"
         android:gravity="center_vertical"
         android:text="20204741"
-        android:textSize="30sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:text="hai.hn204741@sis.hust.edu.vn"
             android:textColor="@color/blue"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

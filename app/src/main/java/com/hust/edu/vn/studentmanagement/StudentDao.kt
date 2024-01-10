@@ -9,7 +9,7 @@ import androidx.room.Update
 @Dao
 interface StudentDao {
     @Query("select * from students")
-    suspend fun getAllStudents(): Array<Student>
+    suspend fun getAllStudents(): MutableList<Student>
 
     @Query("select * from students where _id = :id")
     suspend fun findStudentById(id: Int): Student

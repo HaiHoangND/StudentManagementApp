@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.hust.edu.vn.studentmanagement.databinding.FragmentUpdateStudentBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -40,12 +41,15 @@ class UpdateStudentFragment : Fragment() {
             lifecycleScope.launch(Dispatchers.IO) {
                 student = studentDao.findStudentById(id)
                 Log.v("TAG", "ret = $student")
+                withContext(Dispatchers.Main) {
+                    binding.code.setText(student.code)
+                    binding.name.setText(student.name)
+                    binding.homeTown.setText(student.homeTown)
+                    binding.birthDay.setText(student.birthDay)
+                }
             }
         }
-        binding.code.setText(student.code)
-        binding.name.setText(student.name)
-        binding.homeTown.setText(student.homeTown)
-        binding.birthDay.setText(student.birthDay)
+
         binding.birthDay.setOnClickListener {
             showDatePickerDialog()
         }
@@ -63,40 +67,59 @@ class UpdateStudentFragment : Fragment() {
             if (id != null) {
                 lifecycleScope.launch(Dispatchers.IO) {
                     val id: Int = studentDao.deleteById(id)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Xóa sinh viên thành công",
+                            Toast.LENGTH_SHORT
+                        )
+                        findNavController().navigate(R.id.action_updateStudentFragment_to_studentListFragment)
+                    }
                     Log.v("TAG", "ret = $id")
-                    Toast.makeText(requireContext(), "Xóa sinh viên thành công", Toast.LENGTH_SHORT)
                 }
             }
-            findNavController().navigate(R.id.action_updateStudentFragment_to_studentListFragment)
         }
         binding.update.setOnClickListener {
             val newCode = binding.code.text.toString()
             val newName = binding.name.text.toString()
             val newBirthDay = binding.birthDay.text.toString()
             val newHomeTown = binding.homeTown.text.toString()
-
             // Tạo một đối tượng Student mới
-            val newStudent = Student(
-                _id = student._id,  // Giữ nguyên ID của sinh viên cũ
-                code = newCode,
-                name = newName,
-                birthDay = newBirthDay,
-                homeTown = newHomeTown
-            )
+            if (id != null) {
+                val newStudent = Student(
+                    _id = id,  // Giữ nguyên ID của sinh viên cũ
+                    code = newCode,
+                    name = newName,
+                    birthDay = newBirthDay,
+                    homeTown = newHomeTown
+                )
 
-            // Thực hiện cập nhật trong Database
-            lifecycleScope.launch(Dispatchers.IO) {
-                val rowsAffected = studentDao.update(newStudent)
-                if (rowsAffected > 0) {
-                    // Nếu cập nhật thành công, hiển thị Toast thông báo
-                    Toast.makeText(requireContext(), "Cập nhật thành công", Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    // Nếu có lỗi, hiển thị Toast thông báo lỗi
-                    Toast.makeText(requireContext(), "Cập nhật thất bại", Toast.LENGTH_SHORT).show()
+                // Thực hiện cập nhật trong Database
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val rowsAffected = studentDao.update(newStudent)
+                    withContext(Dispatchers.Main) {
+                        if (rowsAffected > 0) {
+                            // Nếu cập nhật thành công, hiển thị Toast thông báo
+                            Toast.makeText(
+                                requireContext(),
+                                "Cập nhật thành công",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        } else {
+                            // Nếu có lỗi, hiển thị Toast thông báo lỗi
+                            Toast.makeText(
+                                requireContext(),
+                                "Cập nhật thất bại",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+                        findNavController().navigate(R.id.action_updateStudentFragment_to_studentListFragment)
+                    }
+
                 }
             }
-            findNavController().navigate(R.id.action_updateStudentFragment_to_studentListFragment)
         }
     }
 
